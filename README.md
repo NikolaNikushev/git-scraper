@@ -60,8 +60,8 @@ Use exact searches to perform the following replacements throughout this project
 This section is here as a reminder for you to explain to your users how to contribute to the projects you create from this template.
 
 [project-url]: https://github.com/nikolanikushev/git-scraper
-[package-image]: https://badge.fury.io/js/typescript-template.svg
-[package-url]: https://badge.fury.io/js/typescript-template
+[package-image]: https://badge.fury.io/js/git-scraper.svg
+[package-url]: https://badge.fury.io/js/git-scraper
 [issues-image]: https://img.shields.io/github/issues/nikolanikushev/git-scraper.svg?style=popout
 [issues-url]: https://github.com/nikolanikushev/git-scraper/issues
 [build-image]: https://travis-ci.org/nikolanikushev/git-scraper.svg?branch=main
