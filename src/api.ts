@@ -1,21 +1,19 @@
 import { Logger } from 'sitka';
 import { Octokit } from '@octokit/rest';
-import { env } from './loadEnv';
+import { customOctokit } from './CustomOctokit';
+import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types';
 
 export class Api {
   /* Private Instance Fields */
 
   private readonly _logger: Logger;
-  private _api: Octokit;
+  private readonly _api: Octokit;
 
   /* Constructor */
 
-  constructor() {
+  constructor(private owner: string, private repo: string) {
     this._logger = Logger.getLogger({ name: this.constructor.name });
-    this._api = new Octokit({
-      auth: env.GITHUB_TOKEN,
-      userAgent: 'git-scraper',
-    });
+    this._api = customOctokit;
   }
 
   get logger(): Logger {
@@ -28,11 +26,31 @@ export class Api {
 
   /* Public Instance Methods */
 
-  public async loadRepo(owner: string, repo: string) {
+  public async loadRepo() {
     const { data: pullRequest } = await this._api.repos.get({
-      owner,
-      repo,
+      owner: this.owner,
+      repo: this.repo,
     });
     return pullRequest;
+  }
+
+  public async listContributors() {
+    return this._api.repos.listContributors({
+      owner: this.owner,
+      repo: this.repo,
+    });
+  }
+
+  public async getContributorStats(
+    page: number
+  ): Promise<
+    RestEndpointMethodTypes['repos']['getContributorsStats']['response']
+  > {
+    return this._api.repos.getContributorsStats({
+      owner: this.owner,
+      repo: this.repo,
+      per_page: 100,
+      page,
+    });
   }
 }
