@@ -24,11 +24,7 @@ function writeToFile(
   }
 }
 
-function loadContributorStats(
-  page: number = 0
-): Promise<
-  RestEndpointMethodTypes['repos']['getContributorsStats']['response']
-> {
+function loadContributorStats(page: number = 0) {
   let contributors: RestEndpointMethodTypes['repos']['getContributorsStats']['response'];
   return api.getContributorStats(page).then(async (stats) => {
     logger.debug(`Loading getContributorStats page=${page}`);
@@ -37,6 +33,7 @@ function loadContributorStats(
     } else {
       contributors = stats;
     }
+
     if (stats.data.length === 100) {
       const newData = await loadContributorStats(page + 1);
       contributors.data = contributors.data.concat(newData.data);
@@ -59,6 +56,7 @@ loadProject()
       logger.error('Repo has no owner.', { name: repo.name });
       return;
     }
+
     writeToFile(owner, repoName, repo, 'repo');
   })
   .then(() => {
@@ -67,9 +65,16 @@ loadProject()
       writeToFile(owner, repoName, contributors, 'contributors');
     });
   })
+
   .then(() => {
     return loadContributorStats().then((stats) => {
       logger.debug('getContributorStats', stats.data.length);
       writeToFile(owner, repoName, stats, 'stats');
+    });
+  })
+  .then(() => {
+    return api.getCommitActivityStatus().then((commitStatus) => {
+      logger.debug('getCommitActivityStatus');
+      writeToFile(owner, repoName, commitStatus, 'commitActivity');
     });
   });

@@ -1,7 +1,6 @@
 import { Logger } from 'sitka';
 import { Octokit } from '@octokit/rest';
 import { customOctokit } from './CustomOctokit';
-import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods/dist-types/generated/parameters-and-response-types';
 
 export class Api {
   /* Private Instance Fields */
@@ -41,16 +40,32 @@ export class Api {
     });
   }
 
-  public async getContributorStats(
-    page: number
-  ): Promise<
-    RestEndpointMethodTypes['repos']['getContributorsStats']['response']
-  > {
+  /**
+   * Returns the total number of commits authored by the contributor.
+   * In addition, the response includes a Weekly Hash (weeks array) with the following information:
+   * w - Start of the week, given as a Unix timestamp.
+   * a - Number of additions
+   * d - Number of deletions
+   * c - Number of commits
+   * @param page
+   */
+  public async getContributorStats(page: number) {
     return this._api.repos.getContributorsStats({
       owner: this.owner,
       repo: this.repo,
       per_page: 100,
       page,
+    });
+  }
+
+  /**
+   * Returns the last year of commit activity grouped by week.
+   * The days array is a group of commits per day, starting on Sunday.
+   */
+  public async getCommitActivityStatus() {
+    return this._api.repos.getCommitActivityStats({
+      owner: this.owner,
+      repo: this.repo,
     });
   }
 }
