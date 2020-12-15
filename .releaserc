@@ -1,0 +1,107 @@
+{
+  "branches": [
+    "main"
+  ],
+  "verifyConditions": [
+    "@semantic-release/changelog",
+    "@semantic-release/git",
+    "@semantic-release/github"
+  ],
+  "generateNotes": [
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "feature",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "chore",
+              "section": "Chore"
+            },
+            {
+              "type": "docs",
+              "section": "Docs"
+            },
+            {
+              "type": "style",
+              "section": "Style"
+            },
+            {
+              "type": "refactor",
+              "section": "Internal"
+            },
+            {
+              "type": "perf",
+              "hidden": "Breaking Changes"
+            },
+            {
+              "type": "breaking",
+              "hidden": "Breaking Changes"
+            },
+            {
+              "type": "revert",
+              "hidden": true
+            },
+            {
+              "type": "build",
+              "hidden": true
+            },
+            {
+              "type": "ci",
+              "hidden": true
+            },
+            {
+              "type": "test",
+              "hidden": true
+            },
+            {
+              "type": "commit",
+              "hidden": true
+            }
+          ]
+        },
+        "parserOpts": {
+          "noteKeywords": [
+            "BREAKING CHANGE",
+            "BREAKING CHANGES",
+            "BREAKING"
+          ]
+        },
+        "writerOpts": {
+          "commitsSort": [
+            "subject",
+            "scope"
+          ]
+        }
+      }
+    ]
+  ],
+  "prepare": [
+    "@semantic-release/changelog",
+    {
+      "path": "@semantic-release/git",
+      "assets": [
+        "CHANGELOG.md",
+        "package.json",
+        "package-lock.json"
+      ]
+    }
+  ],
+  "publish": [
+    "@semantic-release/github"
+  ],
+  "success": false,
+  "fail": false
+}
