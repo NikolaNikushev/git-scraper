@@ -16,6 +16,7 @@ module.exports = {
                 "breaking",
                 "revert",
                 "build",
+                "internal",
                 "ci",
                 "test",
                 "commit"
