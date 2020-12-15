@@ -12,4 +12,4 @@ interface EnvVariables {
   GITHUB_TOKEN: string;
 }
 
-export const env: EnvVariables = { GITHUB_TOKEN: githubToken };
+export const envVariables: EnvVariables = { GITHUB_TOKEN: githubToken };

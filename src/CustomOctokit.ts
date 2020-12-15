@@ -2,12 +2,12 @@ import { Octokit } from '@octokit/rest';
 
 import { retry } from '@octokit/plugin-retry';
 import { throttling } from '@octokit/plugin-throttling';
-import { env } from './loadEnv';
+import { envVariables } from './loadEnv';
 
 const CustomOctokit = Octokit.plugin(retry, throttling);
 
 export const customOctokit = new CustomOctokit({
-  auth: env.GITHUB_TOKEN,
+  auth: envVariables.GITHUB_TOKEN,
   userAgent: 'git-scraper',
   throttle: {
     onRateLimit: (
