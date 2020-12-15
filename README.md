@@ -1,12 +1,11 @@
 # Git scraper 
 
-[![Package Version][package-image]][package-url]
+
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/nikolanikushev/git-scraper/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/release/nikolanikushev/git-scraper.svg?style=flat)]()
+[![GitHub last commit](https://img.shields.io/github/last-commit/nikolanikushev/git-scraper.svg?style=flat)]()
+
 [![Open Issues][issues-image]][issues-url]
-[![Build Status][build-image]][build-url]
-[![Coverage Status][coverage-image]][coverage-url]
-[![Dependencies Status][dependencies-image]][dependencies-url]
-[![Dev Dependencies Status][dev-dependencies-image]][dev-dependencies-url]
-[![Commitizen Friendly][commitizen-image]][commitizen-url]
 
 A complete Node.js project template using TypeScript and following general best practices.  It allows you to skip the tedious details for the following:
 
@@ -59,18 +58,8 @@ Use exact searches to perform the following replacements throughout this project
 
 This section is here as a reminder for you to explain to your users how to contribute to the projects you create from this template.
 
+
 [project-url]: https://github.com/nikolanikushev/git-scraper
-[package-image]: https://badge.fury.io/js/git-scraper.svg
 [package-url]: https://badge.fury.io/js/git-scraper
 [issues-image]: https://img.shields.io/github/issues/nikolanikushev/git-scraper.svg?style=popout
 [issues-url]: https://github.com/nikolanikushev/git-scraper/issues
-[build-image]: https://travis-ci.org/nikolanikushev/git-scraper.svg?branch=main
-[build-url]: https://travis-ci.org/nikolanikushev/git-scraper
-[coverage-image]: https://coveralls.io/repos/github/nikolanikushev/git-scraper/badge.svg?branch=main
-[coverage-url]: https://coveralls.io/github/nikolanikushev/git-scraper?branch=main
-[dependencies-image]: https://david-dm.org/nikolanikushev/git-scraper/status.svg
-[dependencies-url]: https://david-dm.org/nikolanikushev/git-scraper
-[dev-dependencies-image]: https://david-dm.org/nikolanikushev/git-scraper/dev-status.svg
-[dev-dependencies-url]: https://david-dm.org/nikolanikushev/git-scraper?type=dev
-[commitizen-image]: https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
-[commitizen-url]: http://commitizen.github.io/cz-cli
