@@ -1,4 +1,4 @@
-import { Logger } from "sitka";
+import { Logger } from 'sitka';
 
 export class Example {
   /* Private Instance Fields */
@@ -18,7 +18,7 @@ export class Example {
   /* Public Instance Methods */
 
   public exampleMethod(param: string): string {
-    this._logger.debug("Received: " + param);
+    this._logger.debug('Received: ' + param);
     return param;
   }
 }
