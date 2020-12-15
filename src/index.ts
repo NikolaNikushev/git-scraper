@@ -1,12 +1,4 @@
 import { Logger } from 'sitka';
-import dotEnv from 'dotenv';
-dotEnv.config();
-
-if (!process.env.GITHUB_TOKEN || !process.env.PRIVATE_REPO_TOKEN) {
-  throw new Error(
-    'Please specify the GITHUB_TOKEN environemtn variable in .env'
-  );
-}
 
 export class Example {
   /* Private Instance Fields */
