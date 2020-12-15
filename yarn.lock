@@ -723,7 +723,7 @@
     once "^1.4.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/rest@^18.0.0":
+"@octokit/rest@^18.0.0", "@octokit/rest@^18.0.12":
   version "18.0.12"
   resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.0.12.tgz#278bd41358c56d87c201e787e8adc0cac132503a"
   integrity sha512-hNRCZfKPpeaIjOVuNJzkEL6zacfZlBPV8vw8ReNeyUkVvbuCvvrrx8K8Gw2eyHHsmd4dPlAxIXIZ9oHhJfkJpw==

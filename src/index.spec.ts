@@ -1,18 +1,30 @@
-import { Example } from '../src';
+import { Api } from './api';
 
 describe('Example class', () => {
-  it('should create an instance using its constructor', () => {
-    const example: Example = new Example();
-    const loggerSpy = jest.spyOn(example.logger, 'debug');
+  it('should create an instance using its constructor', async () => {
+    const api = new Api();
+    const reposSpy = jest
+      .spyOn(api.api.repos, 'get')
+      .mockImplementationOnce(() => {
+        return Promise.resolve({} as any);
+      });
 
-    const param = 'this is a test';
-    example.exampleMethod(param);
-    expect(loggerSpy).toHaveBeenCalledWith(`Received: ${param}`);
+    const owner = 'nikolanikushev';
+    const repo = 'git-scraper';
+    await api.loadRepo(owner, repo);
+    expect(reposSpy).toHaveBeenCalledWith({ owner, repo });
   });
-  it('should return whatever is passed to exampleMethod()', () => {
-    const example: Example = new Example();
-    const param: string = 'This is my param.';
-    const returnValue: string = example.exampleMethod(param);
-    expect(returnValue).toEqual(param);
+
+  it('should load the project repo', async () => {
+    const api = new Api();
+    const owner = 'NikolaNikushev';
+    const repoName = 'git-scraper';
+    const reposSpy = jest.spyOn(api.api.repos, 'get');
+
+    const repo = await api.loadRepo(owner, repoName);
+
+    expect(repo.owner?.login).toEqual(owner);
+    expect(repo.html_url).toEqual(`https://github.com/${owner}/${repoName}`);
+    expect(reposSpy).toHaveBeenCalled();
   });
 });
