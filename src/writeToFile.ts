@@ -14,7 +14,7 @@ export function writeToFile(
   fileName: string,
   folder: FolderName = FolderName.Common
 ): void {
-  const outputFolder = process.env.OUTPUT_FOLDER ?? './src/exampleApiOutput';
+  const outputFolder = process.env.OUTPUT_FOLDER ?? './src/example';
   const dir = `${outputFolder}/${ownerName}/${repo}${folder}`;
   fs.mkdirSync(dir, { recursive: true });
   const filePath = `${dir}/${fileName}.json`;

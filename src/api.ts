@@ -38,7 +38,7 @@ export class Api {
   }
 
   public async listContributors() {
-    return this._api.repos.listContributors({
+    return this._api.paginate(this._api.repos.listContributors, {
       owner: this.owner,
       repo: this.repo,
     });

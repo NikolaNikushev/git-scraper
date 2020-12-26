@@ -1,6 +1,7 @@
 import { Api, IssueData } from './api';
 import { Logger } from 'sitka';
 import { FolderName, writeToFile } from './writeToFile';
+import { writeToCSVFile } from './toCSV';
 
 export class ProjectLoader {
   protected api: Api;
@@ -46,18 +47,37 @@ export class ProjectLoader {
   }
 
   public loadContributorStats() {
-    return this.api.getContributorStats().then((stats) => {
+    return this.api.getContributorStats().then(async (stats) => {
       this.logger.debug('Total contributors:', { total: stats.length });
       writeToFile(this.owner, this.repoName, stats, 'stats');
+
+      for (const stat of stats) {
+        const weekData = [];
+
+        for (const week of stat.weeks) {
+          const weekCommitsForAuthor = {
+            repo: this.repoName,
+            author: stat.author?.login,
+            week: week.w,
+            commits: week.c,
+          };
+          weekData.push(weekCommitsForAuthor);
+        }
+
+        await writeToCSVFile(this.owner, this.repoName, 'stats', weekData);
+      }
       return stats;
     });
   }
 
-  public async loadContributorsIssues(contributors: { login: string }[]) {
+  public async loadContributorsIssues(contributors: { login?: string }[]) {
     for (const contributor of contributors) {
       this.logger.debug('Starting process to load user', {
         user: contributor.login,
       });
+      if (!contributor.login) {
+        continue;
+      }
       await this.api
         .loadUserIssuesForRepo(contributor.login)
         .then((userIssues) => {
@@ -94,13 +114,18 @@ export class ProjectLoader {
   public loadContributors() {
     return this.api.listContributors().then((contributors) => {
       this.logger.debug('Loaded contributors');
-      writeToFile(
+      writeToFile(this.owner, this.repoName, contributors, 'contributors');
+      writeToCSVFile(
         this.owner,
         this.repoName,
-        contributors.data as [],
-        'contributors'
+        'contributors',
+        contributors.filter((el) => el.type === 'User'),
+        [
+          { id: 'login', title: 'User' },
+          { id: 'contributions', title: 'Contributions' },
+        ]
       );
-      return contributors.data as { login: string }[];
+      return contributors;
     });
   }
 
