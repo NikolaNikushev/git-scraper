@@ -70,6 +70,7 @@
     "@octokit/plugin-retry": "^3.0.6",
     "@octokit/plugin-throttling": "^3.3.4",
     "@octokit/rest": "^18.0.12",
+    "csv-writer": "^1.6.0",
     "dotenv": "^8.2.0",
     "lint-staged": "^10.5.3",
     "lodash.debounce": "^4.0.8",
