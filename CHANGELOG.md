@@ -1,3 +1,20 @@
+## [1.2.0](https://github.com/nikolanikushev/git-scraper/compare/v1.1.0...v1.2.0) (2020-12-26)
+
+
+### Features
+
+* Added loading of reviews and moved issue loading ([054c2f8](https://github.com/nikolanikushev/git-scraper/commit/054c2f82fc542087d0baea115ce1832310ed0a89))
+* Added loading of weekly commits to CSV ([2f6bc89](https://github.com/nikolanikushev/git-scraper/commit/2f6bc893a9f26bc52c0c2e02068327d7c4dd671b))
+* Added write to csv functionality ([9e9fd17](https://github.com/nikolanikushev/git-scraper/commit/9e9fd17ffcb5c22c27824eacd2f5c1c3b045a07d))
+* Print issue data to CSV ([69e4a50](https://github.com/nikolanikushev/git-scraper/commit/69e4a50127ec3ae5d2b0d481c5b8c4884a027515))
+* Print issue data to CSV ([cbb5615](https://github.com/nikolanikushev/git-scraper/commit/cbb561547d44ebafb127127f3c1a712141c941c2))
+
+
+### Internal
+
+* added await for write to csv ([84032a3](https://github.com/nikolanikushev/git-scraper/commit/84032a3577daac3e6bec0a6eac4cef22c6a7b843))
+* Moved logic for CSV parsing to the issue loading ([faea9a7](https://github.com/nikolanikushev/git-scraper/commit/faea9a7b61815978e2a26eb5660062daf155c3f0))
+
 ## [1.1.0](https://github.com/nikolanikushev/git-scraper/compare/v1.0.0...v1.1.0) (2020-12-26)
 
 
