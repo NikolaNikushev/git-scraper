@@ -10,11 +10,16 @@ describe('ProjectLoader', () => {
 
     it('should load contributors status and put into a CSV', async () => {
       await projectLoader.loadContributorStats();
+      // TODO add test for loading into CSV for stats
     });
 
-    it('should load contributors status and put into a CSV', async () => {
+    it('should load issue data and place it into a CSV', async () => {
       jest.setTimeout(30000);
-      await projectLoader.loadIssues();
+      await projectLoader.loadIssueData(835);
+      // TODO add test for loading into CSV for issues
     });
+    // TODO add test for loading into CSV for reviews
+    // TODO add test for loading into CSV for contributors
+    // TODO add test for loading into CSV for comments
   });
 });

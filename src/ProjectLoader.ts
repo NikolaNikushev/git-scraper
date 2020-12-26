@@ -102,26 +102,7 @@ export class ProjectLoader {
       this.logger.debug('Loaded issues. Starting to load their data.', {
         totalIssues: issues.length,
       });
-      const issuesData = [];
 
-      for (const issue of issues) {
-        if (!issue.user) {
-          continue;
-        }
-
-        const issueData = {
-          repo: this.repoName,
-          author: issue.user.login,
-          state: issue.state,
-          issueId: issue.number,
-          commentCount: issue.comments,
-          lastUpdated: new Date(issue.updated_at).getTime(),
-          type: issue.pull_request ? 'PR' : 'ISSUE',
-        };
-        issuesData.push(issueData);
-      }
-
-      await writeToCSVFile(this.owner, this.repoName, 'issues', issuesData);
       writeToFile(this.owner, this.repoName, issues, 'issues');
       return issues;
     });
@@ -139,11 +120,16 @@ export class ProjectLoader {
         this.owner,
         this.repoName,
         'contributors',
-        contributors.filter((el) => el.type === 'User'),
-        [
-          { id: 'login', title: 'User' },
-          { id: 'contributions', title: 'Contributions' },
-        ]
+        contributors
+          .filter((el) => el.type === 'User')
+          .map((el) => {
+            return {
+              login: el.login,
+              owner: this.owner,
+              repo: this.repoName,
+              contributions: el.contributions,
+            };
+          })
       );
       return contributors;
     });
@@ -161,14 +147,54 @@ export class ProjectLoader {
       FolderName.Issues
     );
 
+    const issueCommentsData = [];
+
+    for (const comment of comments) {
+      if (!comment.user) {
+        continue;
+      }
+
+      const commentData = {
+        owner: this.owner,
+        repo: this.repoName,
+        author: comment.user.login,
+        commentId: comment.id,
+        lastUpdated: new Date(comment.updated_at).getTime(),
+      };
+      issueCommentsData.push(commentData);
+    }
+    await writeToCSVFile(
+      this.owner,
+      this.repoName,
+      'comments',
+      issueCommentsData
+    );
+
     const information = await this.api.getIssueInformation(issueNumber);
+    const data = information.data;
+
     writeToFile(
       this.owner,
       this.repoName,
-      information.data,
+      data,
       `issue-${issueNumber}-information`,
       FolderName.Issues
     );
+
+    if (information.data.user) {
+      const issueData = {
+        owner: this.owner,
+        repo: this.repoName,
+        author: data.user?.login,
+        state: data.state,
+        issueId: data.number,
+        commentCount: data.comments,
+        lastUpdated: new Date(data.updated_at).getTime(),
+        closedAt: data.closed_at ? new Date(data.closed_at).getTime() : null,
+        type: data.pull_request ? 'PR' : 'ISSUE',
+      };
+      await writeToCSVFile(this.owner, this.repoName, 'issues', [issueData]);
+    }
     this.logger.debug('Finished loading of issue', { issueNumber });
   }
 
@@ -194,6 +220,25 @@ export class ProjectLoader {
         `pull-request-${pullRequestNumber}`,
         FolderName.PullRequest
       );
+
+      const reviewData = [];
+
+      for (const review of reviews) {
+        if (!review.user) {
+          continue;
+        }
+        const commentData = {
+          owner: this.owner,
+          repo: this.repoName,
+          author: review.user.login,
+          reviewId: review.id,
+          submittedAt: review.submitted_at
+            ? new Date(review.submitted_at).getTime()
+            : null,
+        };
+        reviewData.push(commentData);
+      }
+      await writeToCSVFile(this.owner, this.repoName, 'reviews', reviewData);
     }
 
     this.logger.debug('Finished loading of reviews', { pullRequestNumber });
