@@ -4,7 +4,7 @@ describe('Example class', () => {
   it('should create an instance using its constructor', async () => {
     const owner = 'nikolanikushev';
     const repo = 'git-scraper';
-    const api = new Api(owner, repo);
+    const api = new Api(owner, repo, new Date());
     const reposSpy = jest
       .spyOn(api.api.repos, 'get')
       .mockImplementationOnce(() => {
@@ -18,7 +18,7 @@ describe('Example class', () => {
   it('should load the project repo', async () => {
     const owner = 'NikolaNikushev';
     const repoName = 'git-scraper';
-    const api = new Api(owner, repoName);
+    const api = new Api(owner, repoName, new Date());
     const reposSpy = jest.spyOn(api.api.repos, 'get');
 
     const repo = await api.loadRepo();

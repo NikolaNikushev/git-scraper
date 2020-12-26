@@ -21,7 +21,8 @@
     "dist/"
   ],
   "scripts": {
-    "build": "npm run clean && npm run lint && tsc && node dist/index.js",
+    "build": "npm run clean && npm run lint && tsc",
+    "start": "npm run build && node dist/index.js",
     "changelog": "conventional-changelog -p angular -u",
     "changelog:update": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "clean": "(rm -r ./.nyc_output || true) && (rm -r ./coverage || true) && (rm -r ./dist || true)",
@@ -57,6 +58,7 @@
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "tslint": "^6.0.0",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.0.3"
   },
   "config": {
