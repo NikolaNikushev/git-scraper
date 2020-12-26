@@ -18,6 +18,10 @@ export function writeToCSVFile(
   const path = `${dir}/${fileName}.csv`;
 
   if (!headers || headers.length <= 0) {
+    if (!data || Object.keys(data).length <= 0) {
+      return Promise.resolve();
+    }
+
     headers = Object.keys(data[0]).map((key) => {
       return {
         id: key,
