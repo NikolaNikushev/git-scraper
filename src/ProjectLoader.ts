@@ -132,10 +132,10 @@ export class ProjectLoader {
   }
 
   public loadContributors() {
-    return this.api.listContributors().then((contributors) => {
+    return this.api.listContributors().then(async (contributors) => {
       this.logger.debug('Loaded contributors');
       writeToFile(this.owner, this.repoName, contributors, 'contributors');
-      writeToCSVFile(
+      await writeToCSVFile(
         this.owner,
         this.repoName,
         'contributors',
