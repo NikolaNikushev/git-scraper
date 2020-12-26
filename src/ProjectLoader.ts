@@ -80,7 +80,7 @@ export class ProjectLoader {
       }
       await this.api
         .loadUserIssuesForRepo(contributor.login)
-        .then((userIssues) => {
+        .then(async (userIssues) => {
           this.logger.debug('Loaded user issues', {
             user: contributor.login,
             totalIssues: userIssues.length,
@@ -91,6 +91,25 @@ export class ProjectLoader {
             userIssues,
             `issues-${contributor.login}`,
             FolderName.User
+          );
+          const userIssuesData = [];
+          for (const issue of userIssues) {
+            const issuesByUser = {
+              repo: this.repoName,
+              author: contributor.login,
+              state: issue.state,
+              issueId: issue.number,
+              commentCount: issue.comments,
+              type: issue.pull_request ? 'PR' : 'ISSUE',
+            };
+            userIssuesData.push(issuesByUser);
+          }
+
+          await writeToCSVFile(
+            this.owner,
+            this.repoName,
+            'issues',
+            userIssuesData
           );
         });
     }
