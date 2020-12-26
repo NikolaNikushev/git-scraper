@@ -92,35 +92,36 @@ export class ProjectLoader {
             `issues-${contributor.login}`,
             FolderName.User
           );
-          const userIssuesData = [];
-          for (const issue of userIssues) {
-            const issuesByUser = {
-              repo: this.repoName,
-              author: contributor.login,
-              state: issue.state,
-              issueId: issue.number,
-              commentCount: issue.comments,
-              type: issue.pull_request ? 'PR' : 'ISSUE',
-            };
-            userIssuesData.push(issuesByUser);
-          }
-
-          await writeToCSVFile(
-            this.owner,
-            this.repoName,
-            'issues',
-            userIssuesData
-          );
         });
     }
     this.logger.debug('Finished loading all user activity');
   }
 
   public loadIssues(): Promise<IssueData[]> {
-    return this.api.loadIssues().then((issues) => {
+    return this.api.loadIssues().then(async (issues) => {
       this.logger.debug('Loaded issues. Starting to load their data.', {
         totalIssues: issues.length,
       });
+      const issuesData = [];
+
+      for (const issue of issues) {
+        if (!issue.user) {
+          continue;
+        }
+
+        const issueData = {
+          repo: this.repoName,
+          author: issue.user.login,
+          state: issue.state,
+          issueId: issue.number,
+          commentCount: issue.comments,
+          lastUpdated: new Date(issue.updated_at).getTime(),
+          type: issue.pull_request ? 'PR' : 'ISSUE',
+        };
+        issuesData.push(issueData);
+      }
+
+      await writeToCSVFile(this.owner, this.repoName, 'issues', issuesData);
       writeToFile(this.owner, this.repoName, issues, 'issues');
       return issues;
     });

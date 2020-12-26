@@ -1,5 +1,4 @@
 import { ProjectLoader } from './ProjectLoader';
-import contributors from '../src/example/willmcgugan/rich/common/contributors.json';
 import rimraf from 'rimraf';
 
 describe('ProjectLoader', () => {
@@ -15,7 +14,7 @@ describe('ProjectLoader', () => {
 
     it('should load contributors status and put into a CSV', async () => {
       jest.setTimeout(30000);
-      await projectLoader.loadContributorsIssues(contributors);
+      await projectLoader.loadIssues();
     });
   });
 });
