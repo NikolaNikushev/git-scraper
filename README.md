@@ -20,7 +20,6 @@ Once you've enabled CI, test coverage, and dependency reports for your project, 
 ## Contents
 
 * [Project Creation](#project-creation)
-* [Rebranding](#rebranding)
 * [Contributing](#contributing)
 
 ## Project Creation
@@ -30,29 +29,9 @@ Clone this repo into the directory you want to use for your new project, delete 
 ```bash
 $ git clone https://github.com/nikolanikushev/node-typescript-template.git <your project directory>
 $ cd <your project directory>
-$ rm -rf ./.git/
-$ git init
 $ npm install
+$ npm start
 ```
-
-## Rebranding
-
-It's a common practice to prefix the source code project name with `node-` to make it clear on GitHub that it's a Node.js project while omitting that prefix in the NPM project since it's understood on npmjs.com.  Thus, the order of these replacements matter.
-
-Be sure to check both [GitHub](https://github.com) and [NPMJS](https://www.npmjs.com) to be sure your project name isn't taken before starting!
-
-Use exact searches to perform the following replacements throughout this project for the most efficient rebranding process:
-
-1. Replace my name with yours: `Chris Wells`
-2. Replace my website URL with yours: `https://chriswells.io`
-3. Replace my *GitHub* username and project name with yours: `nikolanikushev/node-typescript-template`
-4. Replace my *NPM* project name with yours: `typescript-template`
-5. Update [package.json](package.json):
-	* Change `description` to suit your project.
-	* Update the `keywords` list.
-	* In the `author` section, add `email` if you want to include yours.
-6. If you prefer something other than the [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause), replace the entire contents of [LICENSE](LICENSE) as appropriate.
-7. Update this README.md file to describe your project.
 
 ## Contributing
 
