@@ -1,6 +1,9 @@
 import { ProjectLoader } from './ProjectLoader';
 import projects from './input.json';
+import fs from 'fs';
 import { Logger } from 'sitka';
+import rimraf from 'rimraf';
+import { envVariables } from './loadEnv';
 
 interface Project {
   owner: string;
@@ -11,6 +14,12 @@ const logger = Logger.getLogger({ name: 'index' });
 
 async function loadProject(project: Project) {
   const projectLoader = new ProjectLoader(project.owner, project.repo);
+  const csvFolder =
+    envVariables.OUTPUT_FOLDER + `/csv/${project.owner}/${project.repo}`;
+  // Clear the old data
+  if (fs.existsSync(csvFolder)) {
+    rimraf.sync(csvFolder);
+  }
 
   projectLoader
     .loadProject()

@@ -18,7 +18,8 @@ export function writeToFile(
   const dir = `${envVariables.OUTPUT_FOLDER}/${ownerName}/${repo}${folder}`;
   fs.mkdirSync(dir, { recursive: true });
   const filePath = `${dir}/${fileName}.json`;
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, JSON.stringify(data));
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
   }
+  fs.writeFileSync(filePath, JSON.stringify(data));
 }

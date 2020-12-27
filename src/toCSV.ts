@@ -40,6 +40,7 @@ export function writeToCSVFile(
       .writeRecords(data)
       .then(() => appendToFile(path, data, headers));
   }
+
   return appendToFile(path, data, headers);
 }
 
