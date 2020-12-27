@@ -60,6 +60,7 @@ export class ProjectLoader {
             continue;
           }
           const weekCommitsForAuthor = {
+            owner: this.owner,
             repo: this.repoName,
             author: stat.author.login,
             week: week.w,
