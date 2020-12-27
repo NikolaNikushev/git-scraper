@@ -1,4 +1,4 @@
-import { Api, IssueData } from './api';
+import { Api, IssueData, UserType } from './api';
 import { Logger } from 'sitka';
 import { FolderName, writeToFile } from './writeToFile';
 import { writeToCSVFile } from './toCSV';
@@ -55,9 +55,13 @@ export class ProjectLoader {
         const weekData = [];
 
         for (const week of stat.weeks) {
+          // Skip bots and anything that is not a user
+          if (!stat.author || stat.author.type !== UserType.User) {
+            continue;
+          }
           const weekCommitsForAuthor = {
             repo: this.repoName,
-            author: stat.author?.login,
+            author: stat.author.login,
             week: week.w,
             commits: week.c,
           };
@@ -105,7 +109,7 @@ export class ProjectLoader {
 
       writeToFile(this.owner, this.repoName, issues, 'issues');
       for (const issue of issues) {
-        if (!issue.user) {
+        if (!issue.user || issue.user.type !== UserType.User) {
           continue;
         }
         const issueData = {
@@ -140,7 +144,7 @@ export class ProjectLoader {
         this.repoName,
         'contributors',
         contributors
-          .filter((el) => el.type === 'User')
+          .filter((el) => el.type === UserType.User)
           .map((el) => {
             return {
               login: el.login,
@@ -169,7 +173,7 @@ export class ProjectLoader {
     const issueCommentsData = [];
 
     for (const comment of comments) {
-      if (!comment.user) {
+      if (!comment.user || comment.user.type !== UserType.User) {
         continue;
       }
 

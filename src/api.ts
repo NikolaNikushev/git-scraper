@@ -7,6 +7,10 @@ export interface IssueData {
   pull_request?: any;
 }
 
+export enum UserType {
+  User = 'User',
+}
+
 export class Api {
   /* Private Instance Fields */
 
