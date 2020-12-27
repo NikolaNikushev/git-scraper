@@ -111,18 +111,6 @@ export class Api {
   }
 
   /**
-   * Returns all the comments for a specific issue.
-   * Pull requests are considered issues as well
-   */
-  public async getIssueInformation(issueNumber: number) {
-    return this._api.issues.get({
-      owner: this.owner,
-      repo: this.repo,
-      issue_number: issueNumber,
-    });
-  }
-
-  /**
    * Returns all the public events for a repository
    */
   public async getPullRequestReviews(pullRequestNumber: number) {

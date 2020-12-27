@@ -104,6 +104,25 @@ export class ProjectLoader {
       });
 
       writeToFile(this.owner, this.repoName, issues, 'issues');
+      for (const issue of issues) {
+        if (!issue.user) {
+          continue;
+        }
+        const issueData = {
+          owner: this.owner,
+          repo: this.repoName,
+          author: issue.user?.login,
+          state: issue.state,
+          issueId: issue.number,
+          commentCount: issue.comments,
+          lastUpdated: new Date(issue.updated_at).getTime(),
+          closedAt: issue.closed_at
+            ? new Date(issue.closed_at).getTime()
+            : null,
+          type: issue.pull_request ? 'PR' : 'ISSUE',
+        };
+        await writeToCSVFile(this.owner, this.repoName, 'issues', [issueData]);
+      }
       return issues;
     });
   }
@@ -136,7 +155,7 @@ export class ProjectLoader {
   }
 
   public async loadIssueData(issueNumber: number) {
-    this.logger.debug('Starting loading of issue', { issueNumber });
+    this.logger.debug('Starting loading of issue comments', { issueNumber });
 
     const comments = await this.api.listIssueComments(issueNumber);
     writeToFile(
@@ -170,32 +189,7 @@ export class ProjectLoader {
       issueCommentsData
     );
 
-    const information = await this.api.getIssueInformation(issueNumber);
-    const data = information.data;
-
-    writeToFile(
-      this.owner,
-      this.repoName,
-      data,
-      `issue-${issueNumber}-information`,
-      FolderName.Issues
-    );
-
-    if (information.data.user) {
-      const issueData = {
-        owner: this.owner,
-        repo: this.repoName,
-        author: data.user?.login,
-        state: data.state,
-        issueId: data.number,
-        commentCount: data.comments,
-        lastUpdated: new Date(data.updated_at).getTime(),
-        closedAt: data.closed_at ? new Date(data.closed_at).getTime() : null,
-        type: data.pull_request ? 'PR' : 'ISSUE',
-      };
-      await writeToCSVFile(this.owner, this.repoName, 'issues', [issueData]);
-    }
-    this.logger.debug('Finished loading of issue', { issueNumber });
+    this.logger.debug('Finished loading comments for issue', { issueNumber });
   }
 
   public async loadIssuesData(issueNumbers: number[]) {
