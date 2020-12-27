@@ -36,9 +36,7 @@ export function writeToCSVFile(
     append: false,
   });
   if (!fs.existsSync(path)) {
-    return csvWriter
-      .writeRecords(data)
-      .then(() => appendToFile(path, data, headers));
+    return csvWriter.writeRecords(data);
   }
 
   return appendToFile(path, data, headers);

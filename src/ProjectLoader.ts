@@ -6,10 +6,12 @@ import { writeToCSVFile } from './toCSV';
 export class ProjectLoader {
   protected api: Api;
   protected logger: Logger;
+  public since: Date;
+
   constructor(
     protected owner: string,
     protected repoName: string,
-    public since?: Date
+    since?: Date
   ) {
     this.logger = Logger.getLogger({ name: this.constructor.name });
 
@@ -17,7 +19,8 @@ export class ProjectLoader {
     const oneYearAgo = new Date();
 
     oneYearAgo.setFullYear(today.getFullYear() - 1);
-    this.api = new Api(owner, repoName, since ?? oneYearAgo);
+    this.since = since ?? oneYearAgo;
+    this.api = new Api(owner, repoName, this.since);
   }
 
   public loadProject() {
@@ -56,20 +59,41 @@ export class ProjectLoader {
 
         for (const week of stat.weeks) {
           // Skip bots and anything that is not a user
-          if (!stat.author || stat.author.type !== UserType.User) {
+          const weekTime: number = parseInt(week.w || '0', 10) * 1000; // Miliseconds
+          if (
+            !stat.author ||
+            stat.author.type !== UserType.User ||
+            weekTime < this.since.getTime()
+          ) {
             continue;
           }
+
           const weekCommitsForAuthor = {
             owner: this.owner,
             repo: this.repoName,
             author: stat.author.login,
-            week: week.w,
+            week: weekTime,
             commits: week.c,
           };
           weekData.push(weekCommitsForAuthor);
         }
 
         await writeToCSVFile(this.owner, this.repoName, 'stats', weekData);
+      }
+      for (const week of stats[0].weeks) {
+        // Skip bots and anything that is not a user
+        const weekTime: number = parseInt(week.w || '0', 10) * 1000; // Miliseconds
+        if (weekTime < this.since.getTime()) {
+          continue;
+        }
+        const weekData = {
+          week: weekTime,
+          weekNumber: Math.ceil(
+            (weekTime - this.since.getTime()) / (1000 * 3600 * 24) / 7
+          ),
+        };
+
+        await writeToCSVFile(this.owner, this.repoName, 'weeks', [weekData]);
       }
       return stats;
     });
