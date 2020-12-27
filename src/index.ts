@@ -4,6 +4,7 @@ import fs from 'fs';
 import { Logger } from 'sitka';
 import rimraf from 'rimraf';
 import { envVariables } from './loadEnv';
+import { writeToCSVFile } from './toCSV';
 
 interface Project {
   owner: string;
@@ -43,6 +44,7 @@ async function loadProjects() {
   logger.debug('Starting loading of all projects');
   for (const project of projects as Project[]) {
     await loadProject(project);
+    await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
   }
 }
 
