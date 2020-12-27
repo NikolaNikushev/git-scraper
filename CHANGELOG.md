@@ -1,3 +1,21 @@
+## [1.3.0](https://github.com/nikolanikushev/git-scraper/compare/v1.2.0...v1.3.0) (2020-12-27)
+
+
+### Features
+
+* check if user is not a bot ([eec571f](https://github.com/nikolanikushev/git-scraper/commit/eec571fa21c3a09445af33823b901dbc22fe98e1))
+* OUTPUT_FOLDER loaded from .env file ([7f66a8b](https://github.com/nikolanikushev/git-scraper/commit/7f66a8bc484c00f0bb090dc8d03bf60551016200))
+
+
+### Internal
+
+* Using all issues data instead of single issue data for CSV ([558ee24](https://github.com/nikolanikushev/git-scraper/commit/558ee24177eed345d87c2e8964295fb739260de0))
+
+
+### Docs
+
+* Updated readme with relevant information ([ca88203](https://github.com/nikolanikushev/git-scraper/commit/ca88203e512ccb961f2564564db7e57eed7631d7))
+
 ## [1.2.0](https://github.com/nikolanikushev/git-scraper/compare/v1.1.0...v1.2.0) (2020-12-26)
 
 
