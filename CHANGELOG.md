@@ -1,3 +1,15 @@
+### [1.3.1](https://github.com/nikolanikushev/git-scraper/compare/v1.3.0...v1.3.1) (2020-12-27)
+
+
+### Bug Fixes
+
+* Corrected CSV data getting wiped out ([ae478e5](https://github.com/nikolanikushev/git-scraper/commit/ae478e5e2903d3bc97f4cd25a5e1a79940d8a23d))
+
+
+### Internal
+
+* Updated CSV values ([7cdeec9](https://github.com/nikolanikushev/git-scraper/commit/7cdeec945ff058fe0b9b6b03689bb3b5c8b57670))
+
 ## [1.3.0](https://github.com/nikolanikushev/git-scraper/compare/v1.2.0...v1.3.0) (2020-12-27)
 
 
