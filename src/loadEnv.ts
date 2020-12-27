@@ -8,8 +8,14 @@ if (!githubToken) {
   );
 }
 
+const outputFolder = variables.OUTPUT_FOLDER ?? './src/example';
+
 interface EnvVariables {
   GITHUB_TOKEN: string;
+  OUTPUT_FOLDER: string;
 }
 
-export const envVariables: EnvVariables = { GITHUB_TOKEN: githubToken };
+export const envVariables: EnvVariables = {
+  GITHUB_TOKEN: githubToken,
+  OUTPUT_FOLDER: outputFolder,
+};

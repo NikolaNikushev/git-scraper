@@ -1,5 +1,6 @@
 import { createObjectCsvWriter } from 'csv-writer';
 import fs from 'fs';
+import { envVariables } from './loadEnv';
 export interface Header {
   id: string;
   title: string;
@@ -12,8 +13,7 @@ export function writeToCSVFile(
   data: any,
   headers?: Header[]
 ) {
-  const outputFolder = process.env.OUTPUT_FOLDER ?? './src/example';
-  const dir = `${outputFolder}/csv/${ownerName}/${repo}/${fileName}`;
+  const dir = `${envVariables.OUTPUT_FOLDER}/csv/${ownerName}/${repo}/${fileName}`;
   fs.mkdirSync(dir, { recursive: true });
   const path = `${dir}/${fileName}.csv`;
 
