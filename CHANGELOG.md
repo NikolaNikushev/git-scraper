@@ -1,3 +1,10 @@
+### [1.3.2](https://github.com/nikolanikushev/git-scraper/compare/v1.3.1...v1.3.2) (2020-12-27)
+
+
+### Bug Fixes
+
+* Added more time fields and pull request state ([84c13e6](https://github.com/nikolanikushev/git-scraper/commit/84c13e6eb0cb40b791e29695ddafc79e526ecb39))
+
 ### [1.3.1](https://github.com/nikolanikushev/git-scraper/compare/v1.3.0...v1.3.1) (2020-12-27)
 
 
