@@ -7,37 +7,77 @@
 
 [![Open Issues][issues-image]][issues-url]
 
-A complete Node.js project template using TypeScript and following general best practices.  It allows you to skip the tedious details for the following:
-
-* Adding and configuring TypeScript support.
-* Enabling TypeScript linting.
-* Setting up unit tests and code coverage reports.
-* Creating an NPM package for your project.
-* Managing ignored files for Git and NPM.
-
-Once you've enabled CI, test coverage, and dependency reports for your project, this README.md file shows how to add the badges shown above.  This project template even enables automated changelog generation as long as you follow [Conventional Commits](https://conventionalcommits.org), which is made simple through the included [Commitizen CLI](http://commitizen.github.io/cz-cli/).
-
+Git scraper is a tool developer by [Nikola Nikushev](https://github.com/nikolanikushev) for a university project at [Vienna University of Economics and Business](https://www.wu.ac.at/en/dpkm).
+The tool collects github repository information using the github rest api client.
+ 
 ## Contents
 
-* [Project Creation](#project-creation)
+* [Setup](#setup)
+* [What content does the scraper collect](#what-content-does-the-scraper-collect)
+* [How to use](#how-to-use)
+* [Project details](#project-details)
 * [Contributing](#contributing)
 
-## Project Creation
+## What content does the scraper collect?
+The git scraper collects information found relative to create a user activity analysis.
+It links a `REPO` with all the `contributors` for the `REPO` to collect the information relevant for the contributors.
+The information found relevant for one project can be seen in the graph below: 
+![Contribution Graph](./docs/UserContributionGraph.jpg)
+- A user creates a repository. 
+- Multiple users can contribute to a project using one or more of the methods:
+  - Add commits
+  - Add comments on Pull requests or Issues
+  - Creating issues or pull requests
+  - Close issues or pull requests
 
-Clone this repo into the directory you want to use for your new project, delete the Git history, and then reinit as a fresh Git repo:
+The relevant information, for analysis, is stored in a CSV folder.
+For contextual data we also store multiple results in JSON format to understand what data produced the CSVs
 
-```bash
-$ git clone https://github.com/nikolanikushev/node-typescript-template.git <your project directory>
-$ cd <your project directory>
-$ npm install
-$ npm start
-```
+## Setup
+1. To use this project you need to have [NodeJS](https://nodejs.org/en/) 10+.
+1. Obtain a person github token from the [settings page](https://github.com/settings/tokens)
+1. Copy `.env.sample` file  to `.env` with the following contents, by replacing `<your token>` with your token:
+    ```
+    GITHUB_TOKEN=<your token>
+    OUTPUT_FOLDER=<your output folder>
+    ```
+1.  run `yarn` or `npm install`
+
+## How to use
+- Assuming you have the project configured, you can provide the following variables in the `.env` file:
+    - OUTPUT_FOLDER - this allows you to configure where would you like the outputs of the project to be
+
+- Then you can provide a list of projects inside the [input.json](./src/input.json).
+
+All the projects inside the `input.json` will be loaded and sent as output to the `OUTPUT_FOLDER`
+
+## Project architecture
+
+The project structure is as follows:
+- `src` - Folder with the main core code
+    - `example` - Folder which shows examples for a single repo    
+    - `api.ts` - Main class wrapper around the octokit rest api endpoints that we use    
+    - `CustomOctokit.ts` - Creates a wrapper on the octokit client to configure rate limiting    
+    - `index.ts` - Main workflow file that loads all the projects inside the `input.json`    
+    - `input.json` - Holds all the projects that will be loaded when we run `yarn start`    
+    - `loadEnv.ts` - Uses the `dotenv` package to load the environment variables    
+    - `ProjectLoader.ts` - Creates a class that executes the API calls and wraps the responses from the rest API and writes the outputs to JSON and CSV files    
+    - `toCSV.ts` - Holds functions that transform a JSON into a CSV file entry    
+    - `writeToFile.ts` - Holds functions that write contents to a file. All folders get created recursively and we do not overwrite/delete old files     
 
 ## Contributing
 
-This section is here as a reminder for you to explain to your users how to contribute to the projects you create from this template.
+Make a pull request or post an issue and tag [NikolaNikushev](https://github.com/nikolanikushev)
 
+### Commits
+All commits follow the rules for [Semantic Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
+More details can be seen for allowed commits in [./commitlint.config.js](./commitlint.config.js)
+
+### Release
+The project uses automatic release notes generated using git actions in the [semantic-release workflow](./.github/workflows/semantic-release.yml)
+Once a change has been pushed to master, the workflow processes the current commits by running the `semantic-release` command.
+ 
 [project-url]: https://github.com/nikolanikushev/git-scraper
 [package-url]: https://badge.fury.io/js/git-scraper
 [issues-image]: https://img.shields.io/github/issues/nikolanikushev/git-scraper.svg?style=popout
