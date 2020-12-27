@@ -121,6 +121,7 @@ export class ProjectLoader {
           issueId: issue.number,
           commentCount: issue.comments,
           lastUpdated: new Date(issue.updated_at).getTime(),
+          createdAt: new Date(issue.created_at).getTime(),
           closedAt: issue.closed_at
             ? new Date(issue.closed_at).getTime()
             : null,
@@ -184,6 +185,7 @@ export class ProjectLoader {
         author: comment.user.login,
         commentId: comment.id,
         lastUpdated: new Date(comment.updated_at).getTime(),
+        createdAt: new Date(comment.created_at).getTime(),
       };
       issueCommentsData.push(commentData);
     }
@@ -231,6 +233,7 @@ export class ProjectLoader {
           repo: this.repoName,
           author: review.user.login,
           reviewId: review.id,
+          state: review.state,
           submittedAt: review.submitted_at
             ? new Date(review.submitted_at).getTime()
             : null,
