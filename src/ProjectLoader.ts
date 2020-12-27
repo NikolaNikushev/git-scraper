@@ -63,7 +63,8 @@ export class ProjectLoader {
           if (
             !stat.author ||
             stat.author.type !== UserType.User ||
-            weekTime < this.since.getTime()
+            weekTime < this.since.getTime() ||
+            !week.c
           ) {
             continue;
           }
