@@ -1,3 +1,24 @@
+## [1.4.0](https://github.com/nikolanikushev/git-scraper/compare/v1.3.2...v1.4.0) (2020-12-28)
+
+
+### Features
+
+* Added CSV for repos ([947b16c](https://github.com/nikolanikushev/git-scraper/commit/947b16c33fc422e059c1257597e336ac3e22a19b))
+* Added issueNumber for comment data ([a2887f9](https://github.com/nikolanikushev/git-scraper/commit/a2887f90ac59f3f90b6dc2fa3806695c9ee930f5))
+* Added loading of weeks ([ec0fea4](https://github.com/nikolanikushev/git-scraper/commit/ec0fea4d88173945c7314b6d836e51c79ba74027))
+* Added pull request number for review ([5c1d6ec](https://github.com/nikolanikushev/git-scraper/commit/5c1d6ec7a21ac59fe72c6967ed9277480c9a538b))
+* Skip no commits stats ([d5a7f6a](https://github.com/nikolanikushev/git-scraper/commit/d5a7f6a7fbf2a5f5803ef59713d4a9f567304936))
+
+
+### Bug Fixes
+
+* Only return contributors that are users ([102d8bd](https://github.com/nikolanikushev/git-scraper/commit/102d8bdcd66829186c9d732f7b57a6c947e0e981))
+
+
+### Internal
+
+* Updated CSV data to include issue links ([44718fb](https://github.com/nikolanikushev/git-scraper/commit/44718fbc9c28c67ec48badd12e6e94dd1b6c0243))
+
 ### [1.3.2](https://github.com/nikolanikushev/git-scraper/compare/v1.3.1...v1.3.2) (2020-12-27)
 
 
