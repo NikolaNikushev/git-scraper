@@ -181,7 +181,7 @@ export class ProjectLoader {
             };
           })
       );
-      return contributors;
+      return contributors.filter((el) => el.type === UserType.User);
     });
   }
 
