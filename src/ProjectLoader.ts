@@ -211,6 +211,7 @@ export class ProjectLoader {
         commentId: comment.id,
         lastUpdated: new Date(comment.updated_at).getTime(),
         createdAt: new Date(comment.created_at).getTime(),
+        issueNumber,
       };
       issueCommentsData.push(commentData);
     }
