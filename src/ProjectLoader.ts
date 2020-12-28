@@ -263,6 +263,7 @@ export class ProjectLoader {
           submittedAt: review.submitted_at
             ? new Date(review.submitted_at).getTime()
             : null,
+          pullRequestNumber,
         };
         reviewData.push(commentData);
       }
