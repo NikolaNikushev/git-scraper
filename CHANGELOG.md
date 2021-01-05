@@ -1,3 +1,10 @@
+## [1.5.0](https://github.com/nikolanikushev/git-scraper/compare/v1.4.0...v1.5.0) (2021-01-05)
+
+
+### Features
+
+* Added option to append output to a single CSV file ([2887ea2](https://github.com/nikolanikushev/git-scraper/commit/2887ea2f97c4075af5d73ee33b5da9cc1bbb92c2))
+
 ## [1.4.0](https://github.com/nikolanikushev/git-scraper/compare/v1.3.2...v1.4.0) (2020-12-28)
 
 
