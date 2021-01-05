@@ -6,7 +6,7 @@ export interface Header {
   title: string;
 }
 
-export function getCSVOutputFolder(ownerName: string, repo: string) {
+export function getCSVOutputFolder(ownerName?: string, repo?: string) {
   const groupPath = envVariables.SINGLE_CSV_FILE
     ? ''
     : `/${ownerName}/${repo}/`;
