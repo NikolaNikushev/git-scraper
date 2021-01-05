@@ -1,3 +1,10 @@
+### [1.5.1](https://github.com/nikolanikushev/git-scraper/compare/v1.5.0...v1.5.1) (2021-01-05)
+
+
+### Bug Fixes
+
+* Corrected race condition for loading multiple projects ([c89516d](https://github.com/nikolanikushev/git-scraper/commit/c89516d879c6e98944d68715cea50fe04e76cafb))
+
 ## [1.5.0](https://github.com/nikolanikushev/git-scraper/compare/v1.4.0...v1.5.0) (2021-01-05)
 
 
