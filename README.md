@@ -15,7 +15,7 @@ The tool collects github repository information using the github rest api client
 * [Setup](#setup)
 * [What content does the scraper collect](#what-content-does-the-scraper-collect)
 * [How to use](#how-to-use)
-* [Project details](#project-details)
+* [Project architecture](#project-architecture)
 * [Contributing](#contributing)
 
 ## What content does the scraper collect?
@@ -40,12 +40,14 @@ For contextual data we also store multiple results in JSON format to understand 
     ```
     GITHUB_TOKEN=<your token>
     OUTPUT_FOLDER=<your output folder>
+    SINGLE_CSV_FILE=<true/false>
     ```
 1.  run `yarn` or `npm install`
 
 ## How to use
 - Assuming you have the project configured, you can provide the following variables in the `.env` file:
     - OUTPUT_FOLDER - this allows you to configure where would you like the outputs of the project to be
+    - SINGLE_CSV_FILE - should all outputs go into 1 single file, instead of grouping by project
 
 - Then you can provide a list of projects inside the [input.json](./src/input.json).
 

@@ -9,13 +9,16 @@ if (!githubToken) {
 }
 
 const outputFolder = variables.OUTPUT_FOLDER ?? './src/example';
+const singleFile = variables.SINGLE_CSV_FILE === 'true';
 
 interface EnvVariables {
   GITHUB_TOKEN: string;
   OUTPUT_FOLDER: string;
+  SINGLE_CSV_FILE: boolean;
 }
 
 export const envVariables: EnvVariables = {
   GITHUB_TOKEN: githubToken,
   OUTPUT_FOLDER: outputFolder,
+  SINGLE_CSV_FILE: singleFile,
 };

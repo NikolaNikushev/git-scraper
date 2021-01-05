@@ -6,6 +6,13 @@ export interface Header {
   title: string;
 }
 
+export function getCSVOutputFolder(ownerName: string, repo: string) {
+  const groupPath = envVariables.SINGLE_CSV_FILE
+    ? ''
+    : `/${ownerName}/${repo}/`;
+  return `${envVariables.OUTPUT_FOLDER}/csv/${groupPath}`;
+}
+
 export function writeToCSVFile(
   ownerName: string,
   repo: string,
@@ -13,7 +20,7 @@ export function writeToCSVFile(
   data: any,
   headers?: Header[]
 ) {
-  const dir = `${envVariables.OUTPUT_FOLDER}/csv/${ownerName}/${repo}/${fileName}`;
+  const dir = getCSVOutputFolder(ownerName, repo);
   fs.mkdirSync(dir, { recursive: true });
   const path = `${dir}/${fileName}.csv`;
 
