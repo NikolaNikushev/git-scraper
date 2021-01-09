@@ -1,7 +1,7 @@
 import { Logger } from 'sitka';
 import { Octokit } from '@octokit/rest';
 import { customOctokit } from './CustomOctokit';
-
+export const RATE_LIMIT = 4900;
 export abstract class Api {
   /* Private Instance Fields */
   static requestCount = 0;
@@ -20,7 +20,7 @@ export abstract class Api {
 
   get api(): Octokit {
     Api.requestCount++;
-    if (Api.requestCount > 12500) {
+    if (Api.requestCount > RATE_LIMIT) {
       throw new Error('SORRY. Rate limit reached. Continue in 1h');
     }
 

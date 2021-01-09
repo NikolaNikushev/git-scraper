@@ -41,7 +41,7 @@ async function loadProject(project: Project) {
         .then(() => contributors)
     )
     .catch((err) => {
-      if (err.message.includes('API rate limit exceeded for user ID')) {
+      if (err.message.toLowerCase().includes('rate limit')) {
         logger.error('API Rate limit reached.');
         Api.requestCount = 12501;
         return [];
