@@ -9,15 +9,16 @@ import { envVariables } from './loadEnv';
 import { components } from '@octokit/openapi-types/generated/types';
 import { ContributorLoader } from './loader/ContributorLoader';
 import { Api } from './api/Api';
+import { loadConnectedProjects } from './continueLoadingProjects';
 
-interface Project {
+export interface Project {
   owner: string;
   repo: string;
 }
 
 const logger = Logger.getLogger({ name: 'index' });
 
-async function loadProject(project: Project) {
+export async function loadProject(project: Project) {
   const projectLoader = new ProjectLoader(project.owner, project.repo);
 
   return projectLoader
@@ -149,17 +150,7 @@ async function loadProjects() {
 
   await writeToCSVFile('connectedRepos', 'toLoad', 'toLoad', mappedProjects);
 
-  for (let index = 0; index < mappedProjects.length; index++) {
-    const project = mappedProjects[index];
-    await loadProject(project);
-    await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
-    await writeToCSVFile('connectedRepos', 'toLoad', 'loaded', [project]);
-
-    logger.debug('Finished loading connected project', {
-      total: mappedProjects.length,
-      index,
-    });
-  }
+  await loadConnectedProjects(mappedProjects);
 }
 
 loadProjects().then(() => {
