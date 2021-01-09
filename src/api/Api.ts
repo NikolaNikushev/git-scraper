@@ -3,15 +3,16 @@ import { Octokit } from '@octokit/rest';
 import { customOctokit } from './CustomOctokit';
 export const RATE_LIMIT = 4900;
 export abstract class Api {
-  /* Private Instance Fields */
   static requestCount = 0;
   private readonly _logger: Logger;
   private readonly _api: Octokit;
-  /* Constructor */
 
   constructor() {
     this._logger = Logger.getLogger({ name: this.constructor.name });
     this._api = customOctokit;
+    this._api.rateLimit.get().then((limit) => {
+      this._logger.info('Rate limits', { limits: limit.data });
+    });
   }
 
   get logger(): Logger {
