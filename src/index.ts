@@ -1,96 +1,15 @@
-import { ProjectLoader } from './loader/ProjectLoader';
 import projects from './input.json';
-import fs from 'fs';
-import { Logger } from 'sitka';
-import rimraf from 'rimraf';
+import { ContributorLoader } from './loader/ContributorLoader';
 import { getCSVOutputFolder, writeToCSVFile } from './toCSV';
-import { envVariables } from './loadEnv';
+import { loadProject, Project } from './loadProject';
+import { Logger } from 'sitka';
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
 import { components } from '@octokit/openapi-types/generated/types';
-import { ContributorLoader } from './loader/ContributorLoader';
-import { loadConnectedProjects } from './continueLoadingProjects';
-import { Api } from './api/Api';
-import { Contributor } from './api/UserApi';
-
-export interface Project {
-  owner: string;
-  repo: string;
-}
-
+import { envVariables } from './loadEnv';
+import fs from 'fs';
+import rimraf from 'rimraf';
+import { loadConnectedProjects } from './continueToLoadProjects';
 const logger = Logger.getLogger({ name: 'index' });
-
-export async function loadProject(
-  project: Project,
-  connected: boolean
-): Promise<Contributor[]> {
-  const projectLoader = new ProjectLoader(
-    project.owner,
-    project.repo,
-    connected
-  );
-
-  return projectLoader
-    .loadProject()
-    .then(() => projectLoader.loadCommitActivity())
-    .then(() => projectLoader.loadContributorStats())
-    .then(() => projectLoader.loadIssues())
-    .then(async (issues) => {
-      await projectLoader.loadIssuesComments(issues);
-      const pullRequests = issues.filter((issue) =>
-        Boolean(issue.pull_request)
-      );
-      for (const pullRequest of pullRequests) {
-        await projectLoader.loadPullRequestReviews(pullRequest.number);
-      }
-    })
-    .then(() => projectLoader.loadContributors())
-    .then((contributors) =>
-      projectLoader.loadContributorsIssues(contributors).then(async () => {
-        await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
-        if (connected) {
-          await writeToCSVFile('connectedRepos', 'toLoad', 'loaded', [project]);
-        }
-        return contributors;
-      })
-    )
-    .catch((err) => {
-      if (err.message.toLowerCase().includes('rate limit')) {
-        logger.error('API Rate limit reached.');
-
-        if (envVariables.RETRY_ON_RATE_LIMIT_REACHED && Api.nextReset) {
-          const retryIn = Api.nextReset - new Date().getTime() + 5000;
-          logger.info('Going to retry to load project', {
-            project,
-            retryIn: retryIn / 1000,
-          });
-          return new Promise((resolve) => {
-            setTimeout(
-              () =>
-                loadProject(project, connected)
-                  .then((result) => {
-                    return resolve(result as []);
-                  })
-                  .catch((innerError) => {
-                    logger.error('Error loading project. Skipping...', {
-                      innerError,
-                      project,
-                    });
-                    return [];
-                  }),
-              retryIn
-            );
-          });
-        }
-        throw err;
-      }
-
-      logger.error('Failed loading of project data. Continuing with next.', {
-        message: err.message,
-        err,
-      });
-      return [];
-    });
-}
 
 function clearOldData() {
   const singleFile = envVariables.SINGLE_CSV_FILE;
@@ -114,9 +33,6 @@ async function loadProjects() {
   logger.debug('Starting loading of projects', {
     totalProjects: projects.length,
   });
-  if (projects.length > 0) {
-    return;
-  }
 
   clearOldData();
 
