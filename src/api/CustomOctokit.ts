@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 
 import { retry } from '@octokit/plugin-retry';
 import { throttling } from '@octokit/plugin-throttling';
-import { envVariables } from './loadEnv';
+import { envVariables } from '../loadEnv';
 
 const CustomOctokit = Octokit.plugin(retry, throttling);
 

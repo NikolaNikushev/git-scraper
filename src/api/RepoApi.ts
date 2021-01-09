@@ -1,6 +1,4 @@
-import { Logger } from 'sitka';
-import { Octokit } from '@octokit/rest';
-import { customOctokit } from './CustomOctokit';
+import { Api } from './Api';
 
 export interface IssueData {
   number: number;
@@ -11,30 +9,19 @@ export enum UserType {
   User = 'User',
 }
 
-export class Api {
+export class RepoApi extends Api {
   /* Private Instance Fields */
 
-  private readonly _logger: Logger;
-  private readonly _api: Octokit;
   /* Constructor */
 
   constructor(private owner: string, private repo: string, public since: Date) {
-    this._logger = Logger.getLogger({ name: this.constructor.name });
-    this._api = customOctokit;
-  }
-
-  get logger(): Logger {
-    return this._logger;
-  }
-
-  get api(): Octokit {
-    return this._api;
+    super();
   }
 
   /* Public Instance Methods */
 
   public async loadRepo() {
-    const { data: repoData } = await this._api.repos.get({
+    const { data: repoData } = await this.api.repos.get({
       owner: this.owner,
       repo: this.repo,
     });
@@ -42,7 +29,7 @@ export class Api {
   }
 
   public async listContributors() {
-    return this._api.paginate(this._api.repos.listContributors, {
+    return this.api.paginate(this.api.repos.listContributors, {
       owner: this.owner,
       repo: this.repo,
     });
@@ -57,7 +44,7 @@ export class Api {
    * c - Number of commits
    */
   public async getContributorStats() {
-    return this._api.paginate(this._api.repos.getContributorsStats, {
+    return this.api.paginate(this.api.repos.getContributorsStats, {
       owner: this.owner,
       repo: this.repo,
     });
@@ -68,7 +55,7 @@ export class Api {
    * The days array is a group of commits per day, starting on Sunday.
    */
   public async getCommitActivityStatus() {
-    return this._api.repos.getCommitActivityStats({
+    return this.api.repos.getCommitActivityStats({
       owner: this.owner,
       repo: this.repo,
     });
@@ -79,7 +66,7 @@ export class Api {
    * Pull requests are considered
    */
   public async loadUserIssuesForRepo(user: string) {
-    return this._api.paginate(this._api.issues.listForRepo, {
+    return this.api.paginate(this.api.issues.listForRepo, {
       owner: this.owner,
       repo: this.repo,
       state: 'all',
@@ -93,7 +80,7 @@ export class Api {
    * Pull requests are considered issues as well
    */
   public async listIssueComments(issueNumber: number) {
-    return this._api.paginate(this._api.issues.listComments, {
+    return this.api.paginate(this.api.issues.listComments, {
       owner: this.owner,
       repo: this.repo,
       issue_number: issueNumber,
@@ -106,7 +93,7 @@ export class Api {
    * Pull requests are considered issues as well
    */
   public async loadIssues() {
-    return this._api.paginate(this._api.issues.listForRepo, {
+    return this.api.paginate(this.api.issues.listForRepo, {
       owner: this.owner,
       repo: this.repo,
       state: 'all',
@@ -118,7 +105,7 @@ export class Api {
    * Returns all the public events for a repository
    */
   public async getPullRequestReviews(pullRequestNumber: number) {
-    return this._api.paginate(this._api.pulls.listReviews, {
+    return this.api.paginate(this.api.pulls.listReviews, {
       owner: this.owner,
       repo: this.repo,
       pull_number: pullRequestNumber,

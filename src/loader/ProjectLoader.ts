@@ -1,10 +1,10 @@
-import { Api, IssueData, UserType } from './api';
+import { RepoApi, IssueData, UserType } from '../api/RepoApi';
 import { Logger } from 'sitka';
-import { FolderName, writeToFile } from './writeToFile';
-import { writeToCSVFile } from './toCSV';
+import { FolderName, writeToFile } from '../writeToFile';
+import { writeToCSVFile } from '../toCSV';
 
 export class ProjectLoader {
-  protected api: Api;
+  protected api: RepoApi;
   protected logger: Logger;
   public since: Date;
 
@@ -20,7 +20,7 @@ export class ProjectLoader {
 
     oneYearAgo.setFullYear(today.getFullYear() - 1);
     this.since = since ?? oneYearAgo;
-    this.api = new Api(owner, repoName, this.since);
+    this.api = new RepoApi(owner, repoName, this.since);
   }
 
   public loadProject() {
@@ -33,6 +33,7 @@ export class ProjectLoader {
         this.logger.error('Repo has no owner.', { name: repo.name });
         return;
       }
+
       writeToFile(this.owner, this.repoName, repo, 'repo');
     });
   }
@@ -57,9 +58,14 @@ export class ProjectLoader {
       for (const stat of stats) {
         const weekData = [];
 
+        if (!stat.weeks) {
+          continue;
+        }
+
         for (const week of stat.weeks) {
           // Skip bots and anything that is not a user
           const weekTime: number = parseInt(week.w || '0', 10) * 1000; // Miliseconds
+
           if (
             !stat.author ||
             stat.author.type !== UserType.User ||
@@ -81,12 +87,19 @@ export class ProjectLoader {
 
         await writeToCSVFile(this.owner, this.repoName, 'stats', weekData);
       }
+
+      // This happens when no contribution was made to a forked repo.
+      if (!stats[0]?.weeks) {
+        return stats;
+      }
+
       for (const week of stats[0].weeks) {
         // Skip bots and anything that is not a user
         const weekTime: number = parseInt(week.w || '0', 10) * 1000; // Miliseconds
         if (weekTime < this.since.getTime()) {
           continue;
         }
+
         const weekData = {
           week: weekTime,
           weekNumber: Math.ceil(
@@ -105,9 +118,11 @@ export class ProjectLoader {
       this.logger.debug('Starting process to load user', {
         user: contributor.login,
       });
+
       if (!contributor.login) {
         continue;
       }
+
       await this.api
         .loadUserIssuesForRepo(contributor.login)
         .then(async (userIssues) => {
@@ -115,6 +130,7 @@ export class ProjectLoader {
             user: contributor.login,
             totalIssues: userIssues.length,
           });
+
           writeToFile(
             this.owner,
             this.repoName,
@@ -138,6 +154,7 @@ export class ProjectLoader {
         if (!issue.user || issue.user.type !== UserType.User) {
           continue;
         }
+
         const issueData = {
           owner: this.owner,
           repo: this.repoName,
@@ -152,6 +169,7 @@ export class ProjectLoader {
             : null,
           type: issue.pull_request ? 'PR' : 'ISSUE',
         };
+
         await writeToCSVFile(this.owner, this.repoName, 'issues', [issueData]);
       }
       return issues;
@@ -166,6 +184,7 @@ export class ProjectLoader {
     return this.api.listContributors().then(async (contributors) => {
       this.logger.debug('Loaded contributors');
       writeToFile(this.owner, this.repoName, contributors, 'contributors');
+
       await writeToCSVFile(
         this.owner,
         this.repoName,
@@ -181,6 +200,7 @@ export class ProjectLoader {
             };
           })
       );
+
       return contributors.filter((el) => el.type === UserType.User);
     });
   }
@@ -200,6 +220,7 @@ export class ProjectLoader {
     const issueCommentsData = [];
 
     for (const comment of comments) {
+      // Ignore bots and deleted users.
       if (!comment.user || comment.user.type !== UserType.User) {
         continue;
       }
@@ -251,9 +272,11 @@ export class ProjectLoader {
       const reviewData = [];
 
       for (const review of reviews) {
+        // Ignore deleted users. Bots do not put reviews.
         if (!review.user) {
           continue;
         }
+
         const commentData = {
           owner: this.owner,
           repo: this.repoName,
