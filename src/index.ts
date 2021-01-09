@@ -19,7 +19,11 @@ export interface Project {
 const logger = Logger.getLogger({ name: 'index' });
 
 export async function loadProject(project: Project, connected: boolean) {
-  const projectLoader = new ProjectLoader(project.owner, project.repo);
+  const projectLoader = new ProjectLoader(
+    project.owner,
+    project.repo,
+    connected
+  );
 
   return projectLoader
     .loadProject()
@@ -49,7 +53,7 @@ export async function loadProject(project: Project, connected: boolean) {
       if (err.message.toLowerCase().includes('rate limit')) {
         logger.error('API Rate limit reached.');
         Api.requestCount = RATE_LIMIT + 5;
-        return [];
+        throw err;
       }
       logger.error('Failed loading of project data. Continuing with next.', {
         message: err.message,
@@ -81,6 +85,9 @@ async function loadProjects() {
   logger.debug('Starting loading of projects', {
     totalProjects: projects.length,
   });
+  if (projects.length > 0) {
+    return;
+  }
 
   clearOldData();
 

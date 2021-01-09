@@ -8,6 +8,17 @@ export enum FolderName {
   User = '/user',
 }
 
+export function jsonExists(
+  ownerName: string,
+  repo: string,
+  fileName: string,
+  folder: FolderName = FolderName.Common
+) {
+  const dir = `${envVariables.OUTPUT_FOLDER}/${ownerName}/${repo}${folder}`;
+  const filePath = `${dir}/${fileName}.json`;
+  return fs.existsSync(filePath);
+}
+
 export function writeToFile(
   ownerName: string,
   repo: string,

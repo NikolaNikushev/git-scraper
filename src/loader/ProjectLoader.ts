@@ -1,6 +1,6 @@
-import { RepoApi, IssueData, UserType } from '../api/RepoApi';
+import { IssueData, RepoApi, UserType } from '../api/RepoApi';
 import { Logger } from 'sitka';
-import { FolderName, writeToFile } from '../writeToFile';
+import { FolderName, jsonExists, writeToFile } from '../writeToFile';
 import { writeToCSVFile } from '../toCSV';
 
 export class ProjectLoader {
@@ -11,6 +11,7 @@ export class ProjectLoader {
   constructor(
     protected owner: string,
     protected repoName: string,
+    protected connected: boolean = false,
     since?: Date
   ) {
     this.logger = Logger.getLogger({ name: this.constructor.name });
@@ -38,15 +39,15 @@ export class ProjectLoader {
     });
   }
 
-  public loadCommitActivity() {
+  public loadCommitActivity(): Promise<void> {
+    const fileName = 'commitActivity';
+    if (this.connected && jsonExists(this.owner, this.repoName, fileName)) {
+      return Promise.resolve();
+    }
+
     return this.api.getCommitActivityStatus().then((commitStatus) => {
       this.logger.debug('Storing commit activity');
-      writeToFile(
-        this.owner,
-        this.repoName,
-        commitStatus.data,
-        'commitActivity'
-      );
+      writeToFile(this.owner, this.repoName, commitStatus.data, fileName);
     });
   }
 
@@ -149,7 +150,14 @@ export class ProjectLoader {
         totalIssues: issues.length,
       });
 
-      writeToFile(this.owner, this.repoName, issues, 'issues');
+      const fileName = 'issues';
+      if (
+        !this.connected ||
+        (this.connected && !jsonExists(this.owner, this.repoName, fileName))
+      ) {
+        writeToFile(this.owner, this.repoName, issues, fileName);
+      }
+
       for (const issue of issues) {
         if (!issue.user || issue.user.type !== UserType.User) {
           continue;
@@ -208,6 +216,14 @@ export class ProjectLoader {
   public async loadIssueData(issueNumber: number) {
     this.logger.debug('Starting loading of issue comments', { issueNumber });
 
+    const fileName = `issue-${issueNumber}-comments`;
+    if (
+      this.connected &&
+      jsonExists(this.owner, this.repoName, fileName, FolderName.Issues)
+    ) {
+      return Promise.resolve();
+    }
+
     const comments = await this.api.listIssueComments(issueNumber);
     writeToFile(
       this.owner,
@@ -258,6 +274,13 @@ export class ProjectLoader {
     this.logger.debug('Starting loading of pull request data', {
       pullRequestNumber,
     });
+    const fileName = `pull-request-${pullRequestNumber}`;
+    if (
+      this.connected &&
+      jsonExists(this.owner, this.repoName, fileName, FolderName.PullRequest)
+    ) {
+      return Promise.resolve();
+    }
 
     const reviews = await this.api.getPullRequestReviews(pullRequestNumber);
     if (reviews.length > 0) {
@@ -265,7 +288,7 @@ export class ProjectLoader {
         this.owner,
         this.repoName,
         reviews,
-        `pull-request-${pullRequestNumber}`,
+        fileName,
         FolderName.PullRequest
       );
 
