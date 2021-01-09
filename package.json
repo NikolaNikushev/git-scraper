@@ -23,7 +23,7 @@
   "scripts": {
     "build": "npm run clean && npm run lint && tsc",
     "start": "npm run build && node dist/index.js",
-    "start:connectedProjects": "npm run build && node dist/continueLoadingProjects.js",
+    "start:connectedProjects": "npm run build",
     "toCSV": "npm run build && node dist/storeGitDataToCSV.js",
     "changelog": "conventional-changelog -p angular -u",
     "changelog:update": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",

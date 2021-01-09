@@ -2,6 +2,7 @@
 .nyc_output/
 coverage/
 dist/
+output/
 node_modules/
 
 # Project files:

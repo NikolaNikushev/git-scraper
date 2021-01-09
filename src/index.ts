@@ -8,7 +8,7 @@ import { envVariables } from './loadEnv';
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
 import { components } from '@octokit/openapi-types/generated/types';
 import { ContributorLoader } from './loader/ContributorLoader';
-import { Api } from './api/Api';
+import { Api, RATE_LIMIT } from './api/Api';
 import { loadConnectedProjects } from './continueLoadingProjects';
 
 export interface Project {
@@ -18,7 +18,7 @@ export interface Project {
 
 const logger = Logger.getLogger({ name: 'index' });
 
-export async function loadProject(project: Project) {
+export async function loadProject(project: Project, connected: boolean) {
   const projectLoader = new ProjectLoader(project.owner, project.repo);
 
   return projectLoader
@@ -37,14 +37,18 @@ export async function loadProject(project: Project) {
     })
     .then(() => projectLoader.loadContributors())
     .then((contributors) =>
-      projectLoader
-        .loadContributorsIssues(contributors)
-        .then(() => contributors)
+      projectLoader.loadContributorsIssues(contributors).then(async () => {
+        await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
+        if (connected) {
+          await writeToCSVFile('connectedRepos', 'toLoad', 'loaded', [project]);
+        }
+        return contributors;
+      })
     )
     .catch((err) => {
       if (err.message.toLowerCase().includes('rate limit')) {
         logger.error('API Rate limit reached.');
-        Api.requestCount = 12501;
+        Api.requestCount = RATE_LIMIT + 5;
         return [];
       }
       logger.error('Failed loading of project data. Continuing with next.', {
@@ -84,8 +88,7 @@ async function loadProjects() {
   const loadedContributors: string[] = [];
 
   for (const project of projects as Project[]) {
-    const contributors = await loadProject(project);
-    await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
+    const contributors = await loadProject(project, false);
 
     // For each contributors add their top 10 projects that have been working on
     for (const contributor of contributors) {
