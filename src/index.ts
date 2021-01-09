@@ -1,10 +1,14 @@
-import { ProjectLoader } from './ProjectLoader';
+import { ProjectLoader } from './loader/ProjectLoader';
 import projects from './input.json';
 import fs from 'fs';
 import { Logger } from 'sitka';
 import rimraf from 'rimraf';
 import { getCSVOutputFolder, writeToCSVFile } from './toCSV';
 import { envVariables } from './loadEnv';
+// tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
+import { components } from '@octokit/openapi-types/generated/types';
+import { ContributorLoader } from './loader/ContributorLoader';
+import { Api } from './api/Api';
 
 interface Project {
   owner: string;
@@ -20,8 +24,6 @@ async function loadProject(project: Project) {
     .loadProject()
     .then(() => projectLoader.loadCommitActivity())
     .then(() => projectLoader.loadContributorStats())
-    .then(() => projectLoader.loadContributors())
-    .then((contributors) => projectLoader.loadContributorsIssues(contributors))
     .then(() => projectLoader.loadIssues())
     .then(async (issues) => {
       await projectLoader.loadIssuesComments(issues);
@@ -31,6 +33,24 @@ async function loadProject(project: Project) {
       for (const pullRequest of pullRequests) {
         await projectLoader.loadPullRequestReviews(pullRequest.number);
       }
+    })
+    .then(() => projectLoader.loadContributors())
+    .then((contributors) =>
+      projectLoader
+        .loadContributorsIssues(contributors)
+        .then(() => contributors)
+    )
+    .catch((err) => {
+      if (err.message.includes('API rate limit exceeded for user ID')) {
+        logger.error('API Rate limit reached.');
+        Api.requestCount = 12501;
+        return [];
+      }
+      logger.error('Failed loading of project data. Continuing with next.', {
+        message: err.message,
+        err,
+      });
+      return [];
     });
 }
 
@@ -41,12 +61,13 @@ function clearOldData() {
     if (fs.existsSync(csvFolder)) {
       rimraf.sync(csvFolder);
     }
-  } else {
-    for (const project of projects as Project[]) {
-      const csvFolder = getCSVOutputFolder(project.owner, project.repo);
-      if (fs.existsSync(csvFolder)) {
-        rimraf.sync(csvFolder);
-      }
+    return;
+  }
+
+  for (const project of projects as Project[]) {
+    const csvFolder = getCSVOutputFolder(project.owner, project.repo);
+    if (fs.existsSync(csvFolder)) {
+      rimraf.sync(csvFolder);
     }
   }
 }
@@ -58,9 +79,86 @@ async function loadProjects() {
 
   clearOldData();
 
+  let connectedReposToLoad: components['schemas']['minimal-repository'][] = [];
+  const loadedContributors: string[] = [];
+
   for (const project of projects as Project[]) {
+    const contributors = await loadProject(project);
+    await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
+
+    // For each contributors add their top 10 projects that have been working on
+    for (const contributor of contributors) {
+      const login = contributor.login;
+
+      if (!login) {
+        continue;
+      }
+
+      if (loadedContributors.includes(login)) {
+        continue;
+      }
+
+      const contributorLoader = new ContributorLoader(login);
+      const { data } = await contributorLoader.getRecentlyUpdatedRepos();
+      loadedContributors.push(login);
+
+      // Remove duplicates & forked repos
+
+      const newData = data
+        .filter(({ fork }) => !fork)
+        .filter(
+          (loadedRepo) =>
+            !Boolean(
+              connectedReposToLoad.find(
+                (repo) =>
+                  loadedRepo.name === repo.name &&
+                  loadedRepo.owner &&
+                  loadedRepo.owner.login === repo.owner?.login
+              )
+            )
+        );
+
+      connectedReposToLoad = connectedReposToLoad.concat(newData);
+    }
+  }
+
+  // Remove already loaded
+  connectedReposToLoad = connectedReposToLoad.filter(
+    (newProjectToLoad) =>
+      !Boolean(
+        projects.find(
+          (project) =>
+            project.repo === newProjectToLoad.name &&
+            project.owner === newProjectToLoad.owner?.login
+        )
+      )
+  );
+
+  // Only include the ones that have an owner.
+  connectedReposToLoad = connectedReposToLoad.filter(({ owner }) =>
+    Boolean(owner)
+  );
+
+  logger.debug('New repos to load: ', {
+    total: connectedReposToLoad.length,
+  });
+
+  const mappedProjects = connectedReposToLoad.map(({ name, owner }) => {
+    return { repo: name, owner: owner?.login };
+  }) as Project[];
+
+  await writeToCSVFile('connectedRepos', 'toLoad', 'toLoad', mappedProjects);
+
+  for (let index = 0; index < mappedProjects.length; index++) {
+    const project = mappedProjects[index];
     await loadProject(project);
     await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
+    await writeToCSVFile('connectedRepos', 'toLoad', 'loaded', [project]);
+
+    logger.debug('Finished loading connected project', {
+      total: mappedProjects.length,
+      index,
+    });
   }
 }
 
