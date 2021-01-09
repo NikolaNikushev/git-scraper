@@ -8,8 +8,9 @@ import { envVariables } from './loadEnv';
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
 import { components } from '@octokit/openapi-types/generated/types';
 import { ContributorLoader } from './loader/ContributorLoader';
-import { Api, RATE_LIMIT } from './api/Api';
 import { loadConnectedProjects } from './continueLoadingProjects';
+import { Api } from './api/Api';
+import { Contributor } from './api/UserApi';
 
 export interface Project {
   owner: string;
@@ -18,7 +19,10 @@ export interface Project {
 
 const logger = Logger.getLogger({ name: 'index' });
 
-export async function loadProject(project: Project, connected: boolean) {
+export async function loadProject(
+  project: Project,
+  connected: boolean
+): Promise<Contributor[]> {
   const projectLoader = new ProjectLoader(
     project.owner,
     project.repo,
@@ -52,9 +56,34 @@ export async function loadProject(project: Project, connected: boolean) {
     .catch((err) => {
       if (err.message.toLowerCase().includes('rate limit')) {
         logger.error('API Rate limit reached.');
-        Api.requestCount = RATE_LIMIT + 5;
+
+        if (envVariables.RETRY_ON_RATE_LIMIT_REACHED && Api.nextReset) {
+          const retryIn = Api.nextReset - new Date().getTime() + 5000;
+          logger.info('Going to retry to load project', {
+            project,
+            retryIn: retryIn / 1000,
+          });
+          return new Promise((resolve) => {
+            setTimeout(
+              () =>
+                loadProject(project, connected)
+                  .then((result) => {
+                    return resolve(result as []);
+                  })
+                  .catch((innerError) => {
+                    logger.error('Error loading project. Skipping...', {
+                      innerError,
+                      project,
+                    });
+                    return [];
+                  }),
+              retryIn
+            );
+          });
+        }
         throw err;
       }
+
       logger.error('Failed loading of project data. Continuing with next.', {
         message: err.message,
         err,

@@ -2,6 +2,7 @@ import { IssueData, RepoApi, UserType } from '../api/RepoApi';
 import { Logger } from 'sitka';
 import { FolderName, jsonExists, writeToFile } from '../writeToFile';
 import { writeToCSVFile } from '../toCSV';
+import { Contributor } from '../api/UserApi';
 
 export class ProjectLoader {
   protected api: RepoApi;
@@ -114,7 +115,7 @@ export class ProjectLoader {
     });
   }
 
-  public async loadContributorsIssues(contributors: { login?: string }[]) {
+  public async loadContributorsIssues(contributors: Contributor[]) {
     for (const contributor of contributors) {
       this.logger.debug('Starting process to load user', {
         user: contributor.login,

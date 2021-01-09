@@ -2,9 +2,9 @@ import { Logger } from 'sitka';
 import { Octokit } from '@octokit/rest';
 import { customOctokit } from './CustomOctokit';
 export abstract class Api {
-  static requestCount = 0;
   private readonly _logger: Logger;
   private readonly _api: Octokit;
+  static nextReset: number = 0;
 
   constructor() {
     this._logger = Logger.getLogger({ name: this.constructor.name });
@@ -18,6 +18,7 @@ export abstract class Api {
           source_import: limit.data.resources.source_import,
         },
       });
+      Api.nextReset = limit.data.rate.reset * 1000;
     });
   }
 

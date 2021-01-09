@@ -1,5 +1,9 @@
 import { Api } from './Api';
 
+export interface Contributor {
+  login?: string;
+}
+
 export class UserApi extends Api {
   constructor(private user: string) {
     super();
