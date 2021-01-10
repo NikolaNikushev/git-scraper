@@ -53,6 +53,10 @@ For contextual data we also store multiple results in JSON format to understand 
 
 All the projects inside the `input.json` will be loaded and sent as output to the `OUTPUT_FOLDER`
 
+### Make the CSV unique
+If for some reason you believe your data might have duplicates, you can run:
+`yarn neek --input <your_output_folder>/csv/<fileName>.csv --output pathToOther/unique.csv`
+
 ## Project architecture
 
 The project structure is as follows:
