@@ -41,6 +41,7 @@ For contextual data we also store multiple results in JSON format to understand 
     GITHUB_TOKEN=<your token>
     OUTPUT_FOLDER=<your output folder>
     SINGLE_CSV_FILE=<true/false>
+    RETRY_ON_RATE_LIMIT_REACHED=<true/false>
     ```
 1.  run `yarn` or `npm install`
 
@@ -48,6 +49,9 @@ For contextual data we also store multiple results in JSON format to understand 
 - Assuming you have the project configured, you can provide the following variables in the `.env` file:
     - OUTPUT_FOLDER - this allows you to configure where would you like the outputs of the project to be
     - SINGLE_CSV_FILE - should all outputs go into 1 single file, instead of grouping by project
+    - RETRY_ON_RATE_LIMIT_REACHED - If you are requesting data for projects with more than 3000 issues you will get an error that you have reached
+    your RATE_LIMIT. If you set to `true` the process will continue from where it last left off when rate limit error is thrown.
+     Default users have a rate of 5000 per 30 minute, but you can check here [rate limit by github](https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit). 
 
 - Then you can provide a list of projects inside the [input.json](./src/input.json).
 
