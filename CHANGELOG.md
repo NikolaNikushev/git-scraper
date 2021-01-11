@@ -1,3 +1,36 @@
+## [1.6.0](https://github.com/nikolanikushev/git-scraper/compare/v1.5.1...v1.6.0) (2021-01-11)
+
+
+### Features
+
+* Added rate checking and re-using old files to continue from where we last left off ([5beb9e4](https://github.com/nikolanikushev/git-scraper/commit/5beb9e4ee13fdf44decba28f692e89900a51ad2c))
+* Added standalone continue loading of projects in case of rate limit ([eb7a5f6](https://github.com/nikolanikushev/git-scraper/commit/eb7a5f64b58ad2493f141bd5a0352380e63cfae7))
+* Loading of connected projects based on original input of projects ([624e199](https://github.com/nikolanikushev/git-scraper/commit/624e199fb598bb5043928dd0ae8fa9a1bff4d8ad))
+* Re-try loading of projects when the rate limit is reached ([4b179c5](https://github.com/nikolanikushev/git-scraper/commit/4b179c57209c97596659db88ee188e45024b6c31))
+* Skip data when continuing load of existing projects ([e5455d8](https://github.com/nikolanikushev/git-scraper/commit/e5455d8bf625c21828999061a5d6744b099acb4a))
+
+
+### Bug Fixes
+
+* marking all projects as loaded after rate limit reached ([b5d6c68](https://github.com/nikolanikushev/git-scraper/commit/b5d6c688b529dc3814cb9f04030f394c99d3ba87))
+* Project contributors having no weeks if they have not contributed ([3dd3908](https://github.com/nikolanikushev/git-scraper/commit/3dd39083c5a8322639aa544607c901a3f7eea863))
+* Running both continuous and load all projects due to import of functions ([736784d](https://github.com/nikolanikushev/git-scraper/commit/736784d8da77e6dfe75afa09ece21fcdee7f5e61))
+
+
+### Internal
+
+* Added dist/continueLoadingProjects to command ([d051b0e](https://github.com/nikolanikushev/git-scraper/commit/d051b0e2c405df412515bf4f4c92d4d187775f06))
+* Added logging of rate limit stats ([73fa486](https://github.com/nikolanikushev/git-scraper/commit/73fa4862b93f936eec0e47c625670cc2167d42ed))
+* Added neek package for unique entries. Can be ran over console ([9f81f2c](https://github.com/nikolanikushev/git-scraper/commit/9f81f2c34f25e90044c8e31b1523fb467c9ad623))
+* Corrected api limit to 4900 before the limit reach ([b5e35de](https://github.com/nikolanikushev/git-scraper/commit/b5e35de6d6eaef38435be9a3b2644db98279b785))
+* Removed continueToLoad.json entries as data was loaded ([8c93bf4](https://github.com/nikolanikushev/git-scraper/commit/8c93bf41a965fee3bd4d5dfeb279976863539985))
+* removed rate tracking ([f6455bb](https://github.com/nikolanikushev/git-scraper/commit/f6455bb393a52e956098ef7eaab5f0b59a7d9d82))
+
+
+### Docs
+
+* Added Rate limit documentation ([4f6fa58](https://github.com/nikolanikushev/git-scraper/commit/4f6fa58403e4396f72c898350e70779eb7b6ac54))
+
 ### [1.5.1](https://github.com/nikolanikushev/git-scraper/compare/v1.5.0...v1.5.1) (2021-01-05)
 
 
