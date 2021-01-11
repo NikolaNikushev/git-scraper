@@ -12,11 +12,11 @@ export class ProjectLoader {
   constructor(
     protected owner: string,
     protected repoName: string,
-    protected connected: boolean = false,
     since?: Date
   ) {
-    this.logger = Logger.getLogger({ name: this.constructor.name });
-
+    this.logger = Logger.getLogger({
+      name: `${this.constructor.name}/${owner}/${repoName}`,
+    });
     const today = new Date();
     const oneYearAgo = new Date();
 
@@ -42,7 +42,7 @@ export class ProjectLoader {
 
   public loadCommitActivity(): Promise<void> {
     const fileName = 'commitActivity';
-    if (this.connected && jsonExists(this.owner, this.repoName, fileName)) {
+    if (jsonExists(this.owner, this.repoName, fileName)) {
       return Promise.resolve();
     }
 
@@ -124,6 +124,10 @@ export class ProjectLoader {
       if (!contributor.login) {
         continue;
       }
+      const fileName = `issues-${contributor.login}`;
+      if (jsonExists(this.owner, this.repoName, fileName, FolderName.User)) {
+        continue;
+      }
 
       await this.api
         .loadUserIssuesForRepo(contributor.login)
@@ -137,7 +141,7 @@ export class ProjectLoader {
             this.owner,
             this.repoName,
             userIssues,
-            `issues-${contributor.login}`,
+            fileName,
             FolderName.User
           );
         });
@@ -152,10 +156,7 @@ export class ProjectLoader {
       });
 
       const fileName = 'issues';
-      if (
-        !this.connected ||
-        (this.connected && !jsonExists(this.owner, this.repoName, fileName))
-      ) {
+      if (!jsonExists(this.owner, this.repoName, fileName)) {
         writeToFile(this.owner, this.repoName, issues, fileName);
       }
 
@@ -218,10 +219,7 @@ export class ProjectLoader {
     this.logger.debug('Starting loading of issue comments', { issueNumber });
 
     const fileName = `issue-${issueNumber}-comments`;
-    if (
-      this.connected &&
-      jsonExists(this.owner, this.repoName, fileName, FolderName.Issues)
-    ) {
+    if (jsonExists(this.owner, this.repoName, fileName, FolderName.Issues)) {
       return Promise.resolve();
     }
 
@@ -277,46 +275,50 @@ export class ProjectLoader {
     });
     const fileName = `pull-request-${pullRequestNumber}`;
     if (
-      this.connected &&
       jsonExists(this.owner, this.repoName, fileName, FolderName.PullRequest)
     ) {
       return Promise.resolve();
     }
 
     const reviews = await this.api.getPullRequestReviews(pullRequestNumber);
-    if (reviews.length > 0) {
-      writeToFile(
-        this.owner,
-        this.repoName,
-        reviews,
-        fileName,
-        FolderName.PullRequest
-      );
 
-      const reviewData = [];
+    writeToFile(
+      this.owner,
+      this.repoName,
+      reviews,
+      fileName,
+      FolderName.PullRequest
+    );
 
-      for (const review of reviews) {
-        // Ignore deleted users. Bots do not put reviews.
-        if (!review.user) {
-          continue;
-        }
-
-        const commentData = {
-          owner: this.owner,
-          repo: this.repoName,
-          author: review.user.login,
-          reviewId: review.id,
-          state: review.state,
-          submittedAt: review.submitted_at
-            ? new Date(review.submitted_at).getTime()
-            : null,
-          pullRequestNumber,
-        };
-        reviewData.push(commentData);
-      }
-      await writeToCSVFile(this.owner, this.repoName, 'reviews', reviewData);
+    if (reviews.length <= 0) {
+      this.logger.debug('Skipping. No reviews available.', {
+        pullRequestNumber,
+      });
+      return Promise.resolve();
     }
 
+    const reviewData = [];
+
+    for (const review of reviews) {
+      // Ignore deleted users. Bots do not put reviews.
+      if (!review.user) {
+        continue;
+      }
+
+      const commentData = {
+        owner: this.owner,
+        repo: this.repoName,
+        author: review.user.login,
+        reviewId: review.id,
+        state: review.state,
+        submittedAt: review.submitted_at
+          ? new Date(review.submitted_at).getTime()
+          : null,
+        pullRequestNumber,
+      };
+      reviewData.push(commentData);
+    }
+    await writeToCSVFile(this.owner, this.repoName, 'reviews', reviewData);
     this.logger.debug('Finished loading of reviews', { pullRequestNumber });
   }
 }

@@ -1,6 +1,6 @@
 import projects from './input.json';
 import { ContributorLoader } from './loader/ContributorLoader';
-import { getCSVOutputFolder, writeToCSVFile } from './toCSV';
+import { writeToCSVFile } from './toCSV';
 import { loadProject, Project } from './loadProject';
 import { Logger } from 'sitka';
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
@@ -12,20 +12,8 @@ import { loadConnectedProjects } from './continueToLoadProjects';
 const logger = Logger.getLogger({ name: 'index' });
 
 function clearOldData() {
-  const singleFile = envVariables.SINGLE_CSV_FILE;
-  if (singleFile) {
-    const csvFolder = getCSVOutputFolder();
-    if (fs.existsSync(csvFolder)) {
-      rimraf.sync(csvFolder);
-    }
-    return;
-  }
-
-  for (const project of projects as Project[]) {
-    const csvFolder = getCSVOutputFolder(project.owner, project.repo);
-    if (fs.existsSync(csvFolder)) {
-      rimraf.sync(csvFolder);
-    }
+  if (fs.existsSync(envVariables.OUTPUT_FOLDER)) {
+    rimraf.sync(envVariables.OUTPUT_FOLDER);
   }
 }
 
@@ -40,7 +28,7 @@ async function loadProjects() {
   const loadedContributors: string[] = [];
 
   for (const project of projects as Project[]) {
-    const contributors = await loadProject(project, false);
+    const contributors = await loadProject(project);
 
     // For each contributors add their top 10 projects that have been working on
     for (const contributor of contributors) {

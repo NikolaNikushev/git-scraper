@@ -12,15 +12,8 @@ export interface Project {
 }
 const logger = Logger.getLogger({ name: 'project-loader' });
 
-export async function loadProject(
-  project: Project,
-  connected: boolean
-): Promise<Contributor[]> {
-  const projectLoader = new ProjectLoader(
-    project.owner,
-    project.repo,
-    connected
-  );
+export async function loadProject(project: Project): Promise<Contributor[]> {
+  const projectLoader = new ProjectLoader(project.owner, project.repo);
 
   return projectLoader
     .loadProject()
@@ -40,9 +33,7 @@ export async function loadProject(
     .then((contributors) =>
       projectLoader.loadContributorsIssues(contributors).then(async () => {
         await writeToCSVFile(project.owner, project.repo, 'repos', [project]);
-        if (connected) {
-          await writeToCSVFile('connectedRepos', 'toLoad', 'loaded', [project]);
-        }
+        await writeToCSVFile('connectedRepos', 'toLoad', 'loaded', [project]);
         return contributors;
       })
     )
@@ -59,7 +50,7 @@ export async function loadProject(
           return new Promise((resolve) => {
             setTimeout(
               () =>
-                loadProject(project, connected)
+                loadProject(project)
                   .then((result) => {
                     return resolve(result as []);
                   })

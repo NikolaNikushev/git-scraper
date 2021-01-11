@@ -10,7 +10,7 @@ export async function loadConnectedProjects(projectsToLoad: Project[]) {
 
   for (let index = 0; index < projectsToLoad.length; index++) {
     const project = projectsToLoad[index];
-    await loadProject(project, true);
+    await loadProject(project);
     logger.debug('Finished loading connected project', {
       total: projectsToLoad.length,
       index,
